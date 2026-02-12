@@ -3,6 +3,8 @@ import {
   CollectionByHandleResponse,
   CollectionNode,
   Product,
+  ProductByHandleResponse,
+  ProductDetail,
   ShopifyResponse,
   SimpleCollection,
   SimpleProduct,
@@ -88,6 +90,74 @@ const GET_ALL_COLLECTIONS = `
             altText
           }
         }
+      }
+    }
+  }
+`;
+
+const GET_PRODUCT_BY_HANDLE = `
+  query getProductByHandle($handle: String!) {
+    product(handle: $handle) {
+      id
+      title
+      handle
+      description
+      descriptionHtml
+      vendor
+      productType
+      tags
+      priceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      compareAtPriceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      featuredImage {
+        url
+        altText
+      }
+      images(first: 10) {
+        edges {
+          node {
+            url
+            altText
+          }
+        }
+      }
+      variants(first: 10) {
+        edges {
+          node {
+            id
+            title
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            selectedOptions {
+              name
+              value
+            }
+          }
+        }
+      }
+      options {
+        name
+        values
       }
     }
   }
@@ -208,6 +278,27 @@ export async function getAllCollections(first: number = 20): Promise<SimpleColle
     description: node.description,
     image: node.image,
   }));
+}
+
+/**
+ * Fetch a single product by its handle
+ * @param handle - The product handle (URL slug)
+ */
+export async function getProductByHandle(handle: string): Promise<ProductDetail | null> {
+  const data = await shopifyFetch<ProductByHandleResponse>(
+    GET_PRODUCT_BY_HANDLE,
+    { handle }
+  );
+
+  return data.product;
+}
+
+/**
+ * Get all product handles for static generation
+ */
+export async function getAllProductHandles(): Promise<string[]> {
+  const products = await getAllProducts(100);
+  return products.map((p) => p.handle);
 }
 
 /**

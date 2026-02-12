@@ -90,10 +90,14 @@ export async function POST(request: NextRequest) {
 async function handleProductUpdate(payload: { handle?: string }) {
   console.log("Product updated:", payload.handle);
 
-  // Revalidate all collection pages since product could be in any collection
-  revalidatePath("/shoes");
-  revalidatePath("/shirts");
-  revalidatePath("/"); // Homepage might show featured products
+  // Revalidate the specific product page if we have the handle
+  if (payload.handle) {
+    revalidatePath(`/products/${payload.handle}`);
+  }
+
+  // Revalidate listing pages
+  revalidatePath("/products");
+  revalidatePath("/"); // Homepage shows collections
 }
 
 /**
@@ -102,16 +106,13 @@ async function handleProductUpdate(payload: { handle?: string }) {
 async function handleCollectionUpdate(payload: { handle?: string }) {
   console.log("Collection updated:", payload.handle);
 
-  // Revalidate specific collection if we can identify it
-  if (payload.handle === "shoes") {
-    revalidatePath("/shoes");
-  } else if (payload.handle === "shirts") {
-    revalidatePath("/shirts");
-  } else {
-    // Revalidate all if we can't identify
-    revalidatePath("/shoes");
-    revalidatePath("/shirts");
+  // Revalidate specific collection page if we have the handle
+  if (payload.handle) {
+    revalidatePath(`/collections/${payload.handle}`);
   }
+
+  // Revalidate homepage (shows all collections)
+  revalidatePath("/");
 }
 
 /**
@@ -121,6 +122,5 @@ async function handleInventoryUpdate(payload: unknown) {
   console.log("Inventory updated:", payload);
 
   // Revalidate all product pages
-  revalidatePath("/shoes");
-  revalidatePath("/shirts");
+  revalidatePath("/products");
 }

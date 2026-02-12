@@ -69,9 +69,61 @@ export interface SimpleCollection {
   image: ShopifyImage | null;
 }
 
+// Variant types for PDP
+export interface SelectedOption {
+  name: string;
+  value: string;
+}
+
+export interface ProductVariant {
+  id: string;
+  title: string;
+  availableForSale: boolean;
+  price: Money;
+  compareAtPrice: Money | null;
+  selectedOptions: SelectedOption[];
+}
+
+export interface ProductOption {
+  name: string;
+  values: string[];
+}
+
+// Full product detail type for PDP
+export interface ProductDetail {
+  id: string;
+  title: string;
+  handle: string;
+  description: string;
+  descriptionHtml: string;
+  vendor: string;
+  productType: string;
+  tags: string[];
+  priceRange: PriceRange;
+  compareAtPriceRange: {
+    minVariantPrice: Money;
+  } | null;
+  featuredImage: ShopifyImage | null;
+  images: {
+    edges: {
+      node: ShopifyImage;
+    }[];
+  };
+  variants: {
+    edges: {
+      node: ProductVariant;
+    }[];
+  };
+  options: ProductOption[];
+}
+
 // GraphQL Response Types
 export interface CollectionByHandleResponse {
   collection: Collection | null;
+}
+
+export interface ProductByHandleResponse {
+  product: ProductDetail | null;
 }
 
 export interface ShopifyResponse<T> {
