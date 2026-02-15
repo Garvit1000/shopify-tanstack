@@ -1,8 +1,7 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { SimpleProduct } from "@/lib/types";
-import { formatPrice } from "@/lib/shopify";
+import { Link } from "@tanstack/react-router";
+import { Card, CardContent, CardFooter } from "~/components/ui/card";
+import { SimpleProduct } from "~/lib/types";
+import { formatPrice } from "~/lib/shopify";
 
 interface ProductCardProps {
   product: SimpleProduct;
@@ -10,17 +9,16 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <Link href={`/products/${product.handle}`}>
+    <Link to="/products/$handle" params={{ handle: product.handle }}>
       <Card className="overflow-hidden group hover:shadow-lg transition-shadow duration-300 h-full">
         {/* Product Image */}
         <div className="aspect-square relative bg-muted overflow-hidden">
           {product.image ? (
-            <Image
+            <img
               src={product.image.url}
               alt={product.image.altText || product.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">

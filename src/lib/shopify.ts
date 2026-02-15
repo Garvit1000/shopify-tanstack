@@ -10,12 +10,25 @@ import {
   SimpleProduct,
 } from "./types";
 
-const domain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN!;
-const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
+function getShopifyConfig() {
+  const domain = process.env.VITE_SHOPIFY_STORE_DOMAIN;
+  const storefrontAccessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
-const endpoint = `https://${domain}/api/2024-01/graphql.json`;
+  if (!domain || !storefrontAccessToken) {
+    throw new Error(
+      "Missing Shopify env vars: VITE_SHOPIFY_STORE_DOMAIN or SHOPIFY_STOREFRONT_ACCESS_TOKEN"
+    );
+  }
+
+  return {
+    endpoint: `https://${domain}/api/2024-01/graphql.json`,
+    storefrontAccessToken,
+  };
+}
 
 async function shopifyFetch<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
+  const { endpoint, storefrontAccessToken } = getShopifyConfig();
+
   const response = await fetch(endpoint, {
     method: "POST",
     headers: {
@@ -208,8 +221,6 @@ const GET_COLLECTION_PRODUCTS = `
 
 /**
  * Fetch products from a collection by its handle
- * @param handle - The collection handle (e.g., "shoes", "shirts")
- * @param first - Number of products to fetch (default: 50)
  */
 export async function getCollectionProducts(
   handle: string,
@@ -224,7 +235,6 @@ export async function getCollectionProducts(
     return { collection: null, products: [] };
   }
 
-  // Transform to simplified product format
   const products: SimpleProduct[] = data.collection.products.edges.map(
     ({ node }) => ({
       id: node.id,
@@ -242,7 +252,6 @@ export async function getCollectionProducts(
 
 /**
  * Fetch all products from the store
- * @param first - Number of products to fetch (default: 50)
  */
 export async function getAllProducts(first: number = 50): Promise<SimpleProduct[]> {
   const data = await shopifyFetch<{ products: { edges: { node: Product }[] } }>(
@@ -263,7 +272,6 @@ export async function getAllProducts(first: number = 50): Promise<SimpleProduct[
 
 /**
  * Fetch all collections from the store
- * @param first - Number of collections to fetch (default: 20)
  */
 export async function getAllCollections(first: number = 20): Promise<SimpleCollection[]> {
   const data = await shopifyFetch<{ collections: { edges: { node: CollectionNode }[] } }>(
@@ -282,7 +290,6 @@ export async function getAllCollections(first: number = 20): Promise<SimpleColle
 
 /**
  * Fetch a single product by its handle
- * @param handle - The product handle (URL slug)
  */
 export async function getProductByHandle(handle: string): Promise<ProductDetail | null> {
   const data = await shopifyFetch<ProductByHandleResponse>(
