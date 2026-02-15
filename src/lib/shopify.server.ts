@@ -24,14 +24,14 @@ export const fetchAllProducts = createServerFn({
   return _getAllProducts();
 });
 
-export const fetchProductByHandle = createServerFn({
-  method: "GET",
-}).handler(async ({ data: handle }: { data: string }) => {
-  return _getProductByHandle(handle);
-});
+export const fetchProductByHandle = createServerFn({ method: "GET" })
+  .inputValidator((data: string) => data)
+  .handler(async ({ data }: { data: string }) => {
+    return _getProductByHandle(data);
+  });
 
-export const fetchCollectionProducts = createServerFn({
-  method: "GET",
-}).handler(async ({ data: handle }: { data: string }) => {
-  return _getCollectionProducts(handle);
-});
+export const fetchCollectionProducts = createServerFn({ method: "GET" })
+  .inputValidator((data: string) => data)
+  .handler(async ({ data }: { data: string }) => {
+    return _getCollectionProducts(data);
+  });

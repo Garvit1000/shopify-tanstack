@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
 import { Route as ProductsHandleRouteImport } from './routes/products.$handle'
 import { Route as CollectionsHandleRouteImport } from './routes/collections.$handle'
+import { Route as ApiWebhooksShopifyRouteImport } from './routes/api/webhooks.shopify'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const CollectionsHandleRoute = CollectionsHandleRouteImport.update({
   path: '/collections/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhooksShopifyRoute = ApiWebhooksShopifyRouteImport.update({
+  id: '/api/webhooks/shopify',
+  path: '/api/webhooks/shopify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
   '/products/': typeof ProductsIndexRoute
+  '/api/webhooks/shopify': typeof ApiWebhooksShopifyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/collections/$handle': typeof CollectionsHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
   '/products': typeof ProductsIndexRoute
+  '/api/webhooks/shopify': typeof ApiWebhooksShopifyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,18 +61,30 @@ export interface FileRoutesById {
   '/collections/$handle': typeof CollectionsHandleRoute
   '/products/$handle': typeof ProductsHandleRoute
   '/products/': typeof ProductsIndexRoute
+  '/api/webhooks/shopify': typeof ApiWebhooksShopifyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/collections/$handle' | '/products/$handle' | '/products/'
+  fullPaths:
+    | '/'
+    | '/collections/$handle'
+    | '/products/$handle'
+    | '/products/'
+    | '/api/webhooks/shopify'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/collections/$handle' | '/products/$handle' | '/products'
+  to:
+    | '/'
+    | '/collections/$handle'
+    | '/products/$handle'
+    | '/products'
+    | '/api/webhooks/shopify'
   id:
     | '__root__'
     | '/'
     | '/collections/$handle'
     | '/products/$handle'
     | '/products/'
+    | '/api/webhooks/shopify'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -72,6 +92,7 @@ export interface RootRouteChildren {
   CollectionsHandleRoute: typeof CollectionsHandleRoute
   ProductsHandleRoute: typeof ProductsHandleRoute
   ProductsIndexRoute: typeof ProductsIndexRoute
+  ApiWebhooksShopifyRoute: typeof ApiWebhooksShopifyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -104,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionsHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhooks/shopify': {
+      id: '/api/webhooks/shopify'
+      path: '/api/webhooks/shopify'
+      fullPath: '/api/webhooks/shopify'
+      preLoaderRoute: typeof ApiWebhooksShopifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -112,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsHandleRoute: CollectionsHandleRoute,
   ProductsHandleRoute: ProductsHandleRoute,
   ProductsIndexRoute: ProductsIndexRoute,
+  ApiWebhooksShopifyRoute: ApiWebhooksShopifyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

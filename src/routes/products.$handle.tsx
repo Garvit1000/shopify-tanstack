@@ -4,6 +4,7 @@ import { formatPrice } from "~/lib/shopify";
 import { Card } from "~/components/ui/card";
 import { NotFound } from "~/components/NotFound";
 import { seo } from "~/utils/seo";
+import type { ShopifyImage, ProductVariant } from "~/lib/types";
 
 export const Route = createFileRoute("/products/$handle")({
   loader: async ({ params: { handle } }) => {
@@ -31,8 +32,8 @@ export const Route = createFileRoute("/products/$handle")({
 function ProductPage() {
   const { product } = Route.useLoaderData();
 
-  const images = product.images.edges.map((edge) => edge.node);
-  const variants = product.variants.edges.map((edge) => edge.node);
+  const images = product.images.edges.map((edge: { node: ShopifyImage }) => edge.node);
+  const variants = product.variants.edges.map((edge: { node: ProductVariant }) => edge.node);
   const hasDiscount =
     product.compareAtPriceRange?.minVariantPrice &&
     parseFloat(product.compareAtPriceRange.minVariantPrice.amount) >
@@ -61,7 +62,7 @@ function ProductPage() {
           {/* Thumbnail Gallery */}
           {images.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
-              {images.slice(0, 4).map((image, index) => (
+              {images.slice(0, 4).map((image: ShopifyImage, index: number) => (
                 <div
                   key={index}
                   className="aspect-square relative bg-muted rounded-md overflow-hidden border-2 border-transparent hover:border-primary transition-colors cursor-pointer"
@@ -129,13 +130,13 @@ function ProductPage() {
           {/* Product Options */}
           {product.options.length > 0 && product.options[0].name !== "Title" && (
             <div className="space-y-4 mb-6">
-              {product.options.map((option) => (
+              {product.options.map((option: { name: string; values: string[] }) => (
                 <div key={option.name}>
                   <label className="block text-sm font-medium mb-2">
                     {option.name}
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {option.values.map((value) => (
+                    {option.values.map((value: string) => (
                       <button
                         key={value}
                         className="px-4 py-2 border rounded-md text-sm hover:border-primary hover:bg-primary/5 transition-colors"
@@ -199,7 +200,7 @@ function ProductPage() {
             <div className="mt-6">
               <h3 className="text-sm font-medium mb-2">Tags</h3>
               <div className="flex flex-wrap gap-2">
-                {product.tags.map((tag) => (
+                {product.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="px-2 py-1 bg-muted rounded-md text-xs text-muted-foreground"
